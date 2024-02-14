@@ -2,6 +2,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import ujson
+from offset import get_ab_offset
 
 Executor = ThreadPoolExecutor(max_workers=50, thread_name_prefix="EncryptThread")
 
@@ -21,21 +22,12 @@ def encode(game_bundles_path: Path, cache_file, log_callback):
     if not game_bundles_path.exists():
         raise FileNotFoundError("游戏bundles目录不存在")
 
-    if not cache_file:
-        raise FileNotFoundError("未指定index_cache文件")
-
-    with open(cache_file, "r", encoding="utf-8") as f:
-        cache_file_index = ujson.load(f)
-
     log_callback(f"开始加密 {game_bundles_path} 目录中的文件...\n")
 
     futures = []
 
     for AssetFile in game_bundles_path.iterdir():
-        header_len = cache_file_index.get(AssetFile.name)
-        if header_len is None:
-            log_callback(f"{AssetFile.name} 加密失败, 未找到索引, 请重新解密后再加密\n")
-            continue
+        header_len = get_ab_offset(AssetFile.name)
         futures.append(Executor.submit(encode_file, AssetFile, header_len, log_callback))
 
     for future in as_completed(futures):

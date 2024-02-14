@@ -5,6 +5,7 @@ from pathlib import Path
 from binascii import hexlify, unhexlify
 import ujson
 from datetime import datetime
+from offset import get_ab_offset
 
 Executor = ThreadPoolExecutor(max_workers=50, thread_name_prefix="DecryptThread")
 
@@ -23,10 +24,7 @@ def decrypt_file(file_path: Path, log_callback):
     with file_path.open("rb") as f:
         data = f.read()
 
-    header_len = find_next_unityFS_index(data)
-    if header_len == -1:
-        log_callback(f"文件 {file_path.name} 不包含有效的 UnityFS 头，跳过解密。\n")
-        return file_path.name, header_len
+    header_len = get_ab_offset(file_path.name)
 
     with file_path.open("wb") as f:
         f.write(data[header_len:])
