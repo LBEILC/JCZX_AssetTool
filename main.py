@@ -24,7 +24,7 @@ class MainApp:
             root: Tkinter根窗口
         """
         self.root = root
-        self.root.title("交错战线 Assets 工具 V0.7")
+        self.root.title("交错战线 Assets 工具 V1.0.0")
 
         # 确保缓存目录存在
         cache_dir = Path("cache")

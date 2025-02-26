@@ -1,0 +1,86 @@
+name: 构建并发布
+
+on:
+  push:
+    tags:
+      - 'v*' # 当推送带有v开头的标签时触发，例如v1.0.0
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v3
+      
+    - name: 设置Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+        
+    - name: 构建应用程序
+      run: |
+        # 创建必要的目录
+        mkdir -p dist/交错战线Assets工具/cache
+        mkdir -p dist/交错战线Assets工具/output_预乘透明
+        mkdir -p dist/交错战线Assets工具/output_直通透明
+        
+        # 使用PyInstaller打包应用程序
+        pyinstaller --noconfirm --name "交错战线Assets工具" --windowed --add-data "README.md;." --add-data "LICENSE;." --add-data "CHANGELOG.md;." main.py
+        
+        # 复制README、LICENSE和CHANGELOG文件到dist目录
+        copy README.md dist\交错战线Assets工具\
+        copy LICENSE dist\交错战线Assets工具\
+        copy CHANGELOG.md dist\交错战线Assets工具\
+        
+    - name: 创建ZIP压缩包
+      run: |
+        cd dist
+        powershell Compress-Archive -Path "交错战线Assets工具" -DestinationPath "交错战线Assets工具.zip"
+        
+    - name: 提取版本号和更新日志
+      id: changelog
+      run: |
+        $tag = "${{ github.ref_name }}"
+        $version = $tag.TrimStart('v')
+        
+        # 读取CHANGELOG.md文件
+        $changelog = Get-Content -Path CHANGELOG.md -Raw
+        
+        # 提取当前版本的更新日志
+        $pattern = "(?s)## \[$version\].*?(?=## \[|$)"
+        $versionChangelog = [regex]::Match($changelog, $pattern).Value.Trim()
+        
+        # 如果没有找到当前版本的更新日志，则使用默认内容
+        if ([string]::IsNullOrEmpty($versionChangelog)) {
+          $versionChangelog = "请查看CHANGELOG.md获取完整更新日志"
+        }
+        
+        # 将更新日志写入输出变量，用于后续步骤
+        $versionChangelog = $versionChangelog -replace "`n", "%0A"
+        echo "::set-output name=version_changelog::$versionChangelog"
+        
+    - name: 创建发布
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/交错战线Assets工具.zip
+        name: 交错战线Assets工具 ${{ github.ref_name }}
+        body: |
+          ## 交错战线Assets工具 ${{ github.ref_name }}
+          
+          ### 更新内容
+          
+          ${{ steps.changelog.outputs.version_changelog }}
+          
+          ### 使用方法
+          
+          1. 下载并解压`交错战线Assets工具.zip`
+          2. 双击`交错战线Assets工具.exe`运行程序
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 

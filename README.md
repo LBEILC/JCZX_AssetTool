@@ -8,13 +8,16 @@
 - **图像透明度处理**：支持图像的直通透明和预乘透明之间的转换
 - **主题切换**：支持多种界面主题，可以根据个人喜好进行切换
 
-## 项目结构
+## 开发者指南
+
+### 项目结构
 
 ```
 交错战线 Assets 工具/
 ├── main.py                 # 主程序入口
 ├── requirements.txt        # 依赖包列表
 ├── README.md               # 项目说明文档
+├── CHANGELOG.md            # 更新日志
 ├── LICENSE                 # 许可证文件
 ├── cache/                  # 缓存目录
 ├── src/                    # 源代码目录
@@ -33,8 +36,41 @@
 │   │   └── settings_tab.py # 设置标签页
 │   └── utils/              # 工具函数模块
 │       └── __init__.py
-└── output_预乘透明/         # 预乘透明图像输出目录
-└── output_直通透明/         # 直通透明图像输出目录
+└── .github/                # GitHub配置
+    └── workflows/          # GitHub Actions工作流
+        └── release.yml     # 自动发布配置
+```
+
+### 版本发布流程
+
+本项目使用GitHub Actions自动构建和发布应用程序。发布流程如下：
+
+1. 在CHANGELOG.md的"未发布"部分添加新版本的更改内容
+2. 运行版本更新脚本：`python create_release.py <版本号> [发布说明]`
+   例如：`python create_release.py 1.0.0 "第一个正式版本"`
+3. 脚本会自动更新版本号、更新日志，并创建Git标签
+4. 当标签推送到GitHub后，GitHub Actions会自动构建应用程序并创建发布
+
+### 手动构建
+
+如果需要手动构建应用程序，可以使用以下命令：
+
+```bash
+# 安装依赖
+pip install -r requirements.txt
+pip install pyinstaller
+
+# 使用PyInstaller打包应用程序
+pyinstaller --noconfirm --name "交错战线Assets工具" --windowed --add-data "README.md;." --add-data "LICENSE;." main.py
+
+# 创建必要的目录
+mkdir -p dist/交错战线Assets工具/cache
+mkdir -p dist/交错战线Assets工具/output_预乘透明
+mkdir -p dist/交错战线Assets工具/output_直通透明
+
+# 复制README和LICENSE文件到dist目录
+copy README.md dist\交错战线Assets工具\
+copy LICENSE dist\交错战线Assets工具\
 ```
 
 ## 安装与使用

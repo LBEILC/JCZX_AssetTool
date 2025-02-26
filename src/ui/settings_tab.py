@@ -50,7 +50,7 @@ class SettingsTab:
         self.about_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=10)
 
         # 版本信息
-        self.version_label = ttk.Label(self.about_frame, text="交错战线 Assets 工具 V0.7")
+        self.version_label = ttk.Label(self.about_frame, text="交错战线 Assets 工具 V1.0.0")
         self.version_label.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
 
         # 作者信息
