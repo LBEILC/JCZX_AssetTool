@@ -1,1 +1,6 @@
-{"decrypt_path": "", "encrypt_path": "", "cache_file": "", "theme": "darkly"}
+{
+  "decrypt_path": "",
+  "encrypt_path": "",
+  "cache_file": "",
+  "theme": "darkly"
+}
