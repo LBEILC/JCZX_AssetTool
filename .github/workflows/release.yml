@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*' # 当推送带有v开头的标签时触发，例如v1.0.0
 
+permissions:
+  contents: write # 添加写入内容的权限
+
 jobs:
   build:
     runs-on: windows-latest
@@ -64,7 +67,7 @@ jobs:
         
         # 将更新日志写入输出变量，用于后续步骤
         $versionChangelog = $versionChangelog -replace "`n", "%0A"
-        echo "::set-output name=version_changelog::$versionChangelog"
+        echo "version_changelog=$versionChangelog" >> $env:GITHUB_OUTPUT
         
     - name: 创建发布
       uses: softprops/action-gh-release@v1
