@@ -1,5 +1,5 @@
 """
-UI模块包
+UI模块包 - PyQt6版本
 """
 from .crypto_tab import CryptoTab
 from .image_tab import ImageTab

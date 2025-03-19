@@ -1,6 +1,8 @@
 {
-  "decrypt_path": "",
+  "theme": "dark",
+  "decrypt_path": "F:/Game/交错战线fhx/IOS未更新原始素材/加密",
   "encrypt_path": "",
   "cache_file": "",
-  "theme": "darkly"
+  "last_image_dir": "",
+  "enable_acrylic": true
 }
